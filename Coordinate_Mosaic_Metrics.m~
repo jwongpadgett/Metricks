@@ -177,7 +177,7 @@ else
 end
 
 %Ask for RF
-reliabilityinput = inputdlg('Input Reliability Factor:','DRP Reliability Factor:',1,{'2'});
+reliabilityinput = inputdlg('Input Reliability Factor:','DRP Reliability Factor:',1,'2');
 reliabilityinput = str2double(reliabilityinput);
 
 

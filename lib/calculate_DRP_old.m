@@ -1,4 +1,4 @@
-function [ density_per_annulus scaled_drp_sizes est_spacing] = calculate_DRP( coords , coord_bounds , scale, density_dc, reliability, fName )
+function [ density_per_annulus scaled_drp_sizes est_spacing] = calculate_DRP( coords , coord_bounds , scale, density_dc, reliability )
 % Robert Cooper, created 06-28-2012
 %   This script is calculates the DRP of an input set of coordinates,
 %   including the compensation factor referenced. This script is based on
@@ -32,7 +32,7 @@ pix_per_bin = round(k / ( s * D *sqrt(pi) ));
 % If it's at a subpixel level, cap it to be a single pixel and a single
 % micron/pixel
 if pix_per_bin < 0.5
-    pix_per_bin = 1.0;
+    pix_per_bin = 1;
 end
 
 num_of_bins = round( (s/pix_per_bin)/2 );
@@ -197,12 +197,12 @@ else
 end
 
 
- figure(1); bar(scaled_drp_sizes,density_per_annulus); hold on; plot(interpdrpx,splined); 
- plot(est_spacing,localmaxy,'r*');  
- plot(scaled_drp_sizes,repmat(mean_density,length(scaled_drp_sizes),1),'r'); 
- title(['estimated spacing: ' num2str(est_spacing)]);
- hold off;
+% figure(1); bar(scaled_drp_sizes,density_per_annulus); hold on; plot(interpdrpx,splined); 
+% plot(est_spacing,localmaxy,'r*');  
+% plot(scaled_drp_sizes,repmat(mean_density,length(scaled_drp_sizes),1),'r'); 
+% title(['estimated spacing: ' num2str(est_spacing)]);
+% hold off;
 
- saveas(gcf,[ fName '_' num2str(est_spacing) '_spac.png'],'png');
+% saveas(gcf,[ tag(1:end-4) '_' num2str(est_spacing) '_spac.png'],'png');
 % pause;
 end

@@ -1,4 +1,4 @@
-function [ mosaic_stats ] = determine_mosaic_stats( coords, scale, unit, bounds ,clipped_row_col,reliability,tag )
+function [ mosaic_stats ] = determine_mosaic_stats( coords, scale, unit, bounds ,clipped_row_col,reliability )
 % Robert Cooper 09-24-14
 % This function takes in a list of coordinates in a m-2 matrix, and
 % calculates the mean nearest neighbor, cell area created by the
@@ -198,7 +198,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-[ density_per_rad, um_drp_sizes, drp_spac]=calculate_DRP(coords, [bounds(1:2); bounds(3:4)], scale, pixel_density, reliability, tag );
+[ density_per_rad, um_drp_sizes, drp_spac]=calculate_DRP(coords, [bounds(1:2); bounds(3:4)], scale, pixel_density, reliability );
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%

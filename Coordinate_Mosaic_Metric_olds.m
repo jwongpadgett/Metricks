@@ -176,10 +176,6 @@ else
     [~, lutData] = load_scaling_file(fullfile(scalingpath,scalingfname));
 end
 
-%Ask for RF
-reliabilityinput = inputdlg('Input Reliability Factor:','DRP Reliability Factor:',1,{'2'});
-reliabilityinput = str2double(reliabilityinput);
-
 
 first = true;
 
@@ -238,8 +234,8 @@ for i=1:size(fnamelist,1)
             end
 
             % If the corresponding image exists in the folder, use the image bounds to calculate our sizes
-            if exist(fullfile(basepath, [fnamelist{i}(1:end-length('_coords.csv')) '.tif']), 'file')%fot Matlab ConeMarker change: add ==1
-            %if false % do not look for image
+            if exist(fullfile(basepath, [fnamelist{i}(1:end-length('_coords.csv')) '.tif']), 'file')
+
                 im = imread( fullfile(basepath, [fnamelist{i}(1:end-length('_coords.csv')) '.tif']));
 
                 width = size(im,2);
@@ -290,13 +286,13 @@ for i=1:size(fnamelist,1)
                 clip_start_end = [min(coords(:,1))+diffwidth  max(coords(:,1))-diffwidth min(coords(:,2))+diffheight max(coords(:,2))-diffheight];
             end
 
-            tag=fnamelist{i};
-            statistics = determine_mosaic_stats( clipped_coords, scaleval, selectedunit, clip_start_end ,[pixelwindowsize pixelwindowsize],reliabilityinput,tag(1:length(tag)-4) );
+
+            statistics = determine_mosaic_stats( clipped_coords, scaleval, selectedunit, clip_start_end ,[pixelwindowsize pixelwindowsize], 4 );
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %% Determine FFT Power Spectra %%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            if (exist('fit_fourier_spacing') == 2) && exist(fullfile(basepath, [fnamelist{i}(1:end-length('_coords.csv')) '.tif']), 'file')==2 %for Conemarker change to ==1
+            if (exist('fit_fourier_spacing') == 2) && exist(fullfile(basepath, [fnamelist{i}(1:end-length('_coords.csv')) '.tif']), 'file')==2
                 
                 clipped_im = im(round(clip_start_end(3):clip_start_end(4)), round(clip_start_end(1):clip_start_end(2)) );
                 
@@ -349,7 +345,7 @@ for i=1:size(fnamelist,1)
                             numfields = numfields-1;                        
                         else
     %                         disp([fields{k} ' added!']);
-                            fprintf(fid,',%s',datafields{k}); 
+                            fprintf(fid,',%s',datafields{k});
                             k = k+1;
                         end 
 
@@ -371,7 +367,7 @@ for i=1:size(fnamelist,1)
                     if size(val,1) == 1 || size(val,2) == 1
                         val = statistics.(datafields{k});
 
-                        fprintf(fid,',%1.3f',val);
+                        fprintf(fid,',%1.2f',val);
                     end
                 end
 
