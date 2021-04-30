@@ -200,7 +200,7 @@ end
  figure(1); bar(scaled_drp_sizes,density_per_annulus); hold on; plot(interpdrpx,splined); 
  plot(est_spacing,localmaxy,'r*');  
  plot(scaled_drp_sizes,repmat(mean_density,length(scaled_drp_sizes),1),'r'); 
- title(['estimated spacing: ' num2str(est_spacing)]);
+ title(['estimated spacing: ' num2str(est_spacing) '/t ReliabilityFactor: ' num2str(reliability)]);
  hold off;
 
  saveas(gcf,[ fName '_' num2str(est_spacing) '_spac.png'],'png');

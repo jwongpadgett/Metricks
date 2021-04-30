@@ -196,6 +196,19 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Determine Density Recovery Profile %% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%If using 'auto' (reliabilityinput==0), change RF based on following conditions
+% IC_RI <7 RF =3.5
+% IC_RI >=7 RF =4
+% numCells <100 RF =1
+if reliability ==0
+    if numcells <100
+        reliability = 1;
+    elseif regularity_ic_index < 7
+        reliability = 3.5;
+    else
+        reliability = 4;
+    end
+end
 
 
 [ density_per_rad, um_drp_sizes, drp_spac]=calculate_DRP(coords, [bounds(1:2); bounds(3:4)], scale, pixel_density, reliability, tag );

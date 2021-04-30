@@ -177,12 +177,9 @@ else
 end
 
 %Ask for RF
-reliabilityinput = inputdlg('Input Reliability Factor:','DRP Reliability Factor:',1,{'auto'});
-if strcmp(reliabilityinput, 'auto')
-    reliabilityinput = 0;
-else
-    reliabilityinput = str2double(reliabilityinput);
-end
+reliabilityinput = inputdlg('Input Reliability Factor:','DRP Reliability Factor:',1,{'2'});
+reliabilityinput = str2double(reliabilityinput);
+
 
 first = true;
 
@@ -294,96 +291,98 @@ for i=1:size(fnamelist,1)
             end
 
             tag=fnamelist{i};
-            statistics = determine_mosaic_stats( clipped_coords, scaleval, selectedunit, clip_start_end ,[pixelwindowsize pixelwindowsize],reliabilityinput,tag(1:length(tag)-4) );
+            for numDRP =2:0.5:6
+                reliabilityinput =numDRP;
+                statistics = determine_mosaic_stats( clipped_coords, scaleval, selectedunit, clip_start_end ,[pixelwindowsize pixelwindowsize],reliabilityinput,tag(1:length(tag)-4) );
 
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %% Determine FFT Power Spectra %%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            if (exist('fit_fourier_spacing') == 2) && exist(fullfile(basepath, [fnamelist{i}(1:end-length('_coords.csv')) '.tif']), 'file')==2 %for Conemarker change to ==1
-                
-                clipped_im = im(round(clip_start_end(3):clip_start_end(4)), round(clip_start_end(1):clip_start_end(2)) );
-                
-                [pixel_spac, ~, quality] = fit_fourier_spacing(clipped_im, min(size(clipped_im)), false,'row');
-                statistics.DFT_Row_Spacing = pixel_spac*scaleval;
-                statistics.DFT_Row_Quality = quality;
-                
-                [pixel_spac, ~, quality] = fit_fourier_spacing(clipped_im, min(size(clipped_im)), false,'cell');
-                statistics.DFT_Cell_Spacing = pixel_spac*scaleval;
-                statistics.DFT_Cell_Quality = quality;
-                
-                
-            end
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %% Determine FFT Power Spectra %%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                if (exist('fit_fourier_spacing') == 2) && exist(fullfile(basepath, [fnamelist{i}(1:end-length('_coords.csv')) '.tif']), 'file')==2 %for Conemarker change to ==1
 
+                    clipped_im = im(round(clip_start_end(3):clip_start_end(4)), round(clip_start_end(1):clip_start_end(2)) );
 
-            warning off;
-            [ success ] = mkdir(basepath,'Results');
-            warning on;
-            
-            if isempty(windowsize)
-                result_fname = [getparent(basepath,'short') '_coordstats_' date '.csv'];
-            else
-                result_fname = [getparent(basepath,'short') '_coordstats_' date '_' num2str(windowsize) selectedunit '.csv'];
-            end
-            if success
+                    [pixel_spac, ~, quality] = fit_fourier_spacing(clipped_im, min(size(clipped_im)), false,'row');
+                    statistics.DFT_Row_Spacing = pixel_spac*scaleval;
+                    statistics.DFT_Row_Quality = quality;
 
-                if first
-                    fid= fopen(fullfile(basepath,'Results', result_fname),'w');
-
-                    % If it is the first time writing the file, then write the
-                    % header
-                    fprintf(fid,'Filename');
-
-                    % Grab the names of the fields we're working with
-                    datafields = fieldnames(statistics);
-
-                    numfields = size(datafields,1);                
-
-                    k=1;
-
-                    while k <= numfields
-
-                        val = statistics.(datafields{k});
-
-                        % If it is a multi-dimensional field, remove it
-                        % from our csv, and write it separately.
-                        if size(val,1) ~= 1 || size(val,2) ~= 1   
-                            disp([datafields{k} ' removed!']);
-                            datafields = datafields([1:k-1 k+1:end]);                        
-                            numfields = numfields-1;                        
-                        else
-    %                         disp([fields{k} ' added!']);
-                            fprintf(fid,',%s',datafields{k}); 
-                            k = k+1;
-                        end 
+                    [pixel_spac, ~, quality] = fit_fourier_spacing(clipped_im, min(size(clipped_im)), false,'cell');
+                    statistics.DFT_Cell_Spacing = pixel_spac*scaleval;
+                    statistics.DFT_Cell_Quality = quality;
 
 
-                    end  
-                    fprintf(fid,'\n');
-
-                    first = false;
-
-                else % If it isn't the first entry, then append.
-                    fid= fopen(fullfile(basepath,'Results',result_fname ),'a');
                 end
 
-                % Write the file we've worked on as the first column
-                fprintf(fid,'%s', fnamelist{i});
 
-                for k=1:size(datafields,1)
-    %                 fields{k}
-                    if size(val,1) == 1 || size(val,2) == 1
-                        val = statistics.(datafields{k});
+                warning off;
+                [ success ] = mkdir(basepath,'Results_DRPTest' );
+                warning on;
 
-                        fprintf(fid,',%1.3f',val);
+                if isempty(windowsize)
+                    result_fname = [getparent(basepath,'short') '_coordstats_' date '.csv'];
+                else
+                    result_fname = [getparent(basepath,'short') '_coordstats_' date '_' num2str(windowsize) selectedunit '.csv'];
+                end
+                if success
+
+                    if first
+                        fid= fopen(fullfile(basepath,'Results_DRPTest', result_fname),'w');
+
+                        % If it is the first time writing the file, then write the
+                        % header
+                        fprintf(fid,'Filename');
+
+                        % Grab the names of the fields we're working with
+                        datafields = fieldnames(statistics);
+
+                        numfields = size(datafields,1);                
+
+                        k=1;
+
+                        while k <= numfields
+
+                            val = statistics.(datafields{k});
+
+                            % If it is a multi-dimensional field, remove it
+                            % from our csv, and write it separately.
+                            if size(val,1) ~= 1 || size(val,2) ~= 1   
+                                disp([datafields{k} ' removed!']);
+                                datafields = datafields([1:k-1 k+1:end]);                        
+                                numfields = numfields-1;                        
+                            else
+        %                         disp([fields{k} ' added!']);
+                                fprintf(fid,',%s',datafields{k}); 
+                                k = k+1;
+                            end 
+
+
+                        end  
+                        fprintf(fid,'\n');
+
+                        first = false;
+
+                    else % If it isn't the first entry, then append.
+                        fid= fopen(fullfile(basepath,['Results_DRPTest'],result_fname ),'a');
                     end
+
+                    % Write the file we've worked on as the first column
+                    fprintf(fid,'%s', fnamelist{i});
+
+                    for k=1:size(datafields,1)
+        %                 fields{k}
+                        if size(val,1) == 1 || size(val,2) == 1
+                            val = statistics.(datafields{k});
+
+                            fprintf(fid,',%1.3f',val);
+                        end
+                    end
+
+                    fprintf(fid,'\n');
+                    fclose(fid);
+                else
+                    error('Failed to make results folder! Exiting...');
                 end
-
-                fprintf(fid,'\n');
-                fclose(fid);
-            else
-                error('Failed to make results folder! Exiting...');
             end
-
         end
     catch ex
         warning(['Unable to analyze ' fnamelist{i} ':']);
